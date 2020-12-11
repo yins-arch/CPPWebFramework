@@ -95,11 +95,14 @@ void HttpParser::doParseUrl()
         int size = tempParam.size();
         for(int i = 0; i < size; ++i)
         {
-            QByteArrayList p(tempParam[i].split('='));
-            if(p.size() == 2)
-                parameters.insert(p[0], p[1]);
-            else if(p.size() == 1)
-                parameters.insert(p[0], "");
+            //[Bugfix] base64 parse "===="
+			int firstEqual = tempParam[i].indexOf('=');
+            if (firstEqual >= 1)
+            {
+                QByteArray key = tempParam[i].left(firstEqual);
+                QByteArray value = tempParam[i].right(tempParam[i].size() - firstEqual - 1);
+                parameters.insert(key,value);
+            }
         }
     }
 }
